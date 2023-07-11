@@ -18,7 +18,7 @@ import java.util.UUID;
 public class AccountController {
     private final AccountService accountService;
 
-    @GetMapping("/{{customerId}}")
+    @GetMapping("/{customerId}")
     public ResponseEntity<Account> getAccount(@PathVariable String customerId, @RequestBody UUID accountId) throws AuthenticationException {
       return new ResponseEntity<>(this.accountService.getAccount(UUID.fromString(customerId),accountId), HttpStatus.OK);
     }
