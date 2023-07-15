@@ -18,10 +18,14 @@ public class TransactionServiceImpl implements TransactionService {
     public Transaction addTransaction(Transaction transaction) {
         return this.transactionRepository.save(transaction);
     }
-
     @Override
     public List<Transaction> getTransactionsByAccount(UUID accountId) {
         return transactionRepository.getAllTransactionByAccountId(accountId);
+    }
+    @Override
+    public Transaction getTransaction(UUID transactionId){
+        return transactionRepository.findById(transactionId)
+                .orElseThrow(()->new RuntimeException("Transaction not found with id: "+transactionId));
     }
 
 

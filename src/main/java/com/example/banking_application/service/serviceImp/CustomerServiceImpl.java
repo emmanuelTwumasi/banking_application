@@ -9,7 +9,6 @@ import com.example.banking_application.repository.CustomerRepository;
 import com.example.banking_application.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -27,13 +26,15 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer verifyCustomer(UUID customerId){
         return customerRepository.findById(customerId)
-                .orElseThrow(()->new CustomerNotFoundException("Customer with found with id: "+customerId));
-
+                .orElseThrow(()->
+                        new CustomerNotFoundException("Customer with found with id: "+customerId));
     }
 
     @Override
     public UUID loginCustomer(LoginDto loginDto) {
-        Customer customer =  this.customerRepository.findCustomerByUsernameAndPassword(loginDto.email(), loginDto.password()).orElseThrow(()->new CustomerNotFoundException("Customer does not exist."));
+        Customer customer =  this.customerRepository.
+                findCustomerByUsernameAndPassword(loginDto.email(), loginDto.password())
+                .orElseThrow(()->new CustomerNotFoundException("Customer does not exist."));
         return customer.getId();
     }
 

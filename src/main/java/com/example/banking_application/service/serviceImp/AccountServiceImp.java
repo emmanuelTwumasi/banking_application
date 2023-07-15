@@ -63,10 +63,12 @@ public class AccountServiceImp implements AccountService {
         }
 
         Account existingAccount = this.getAccount(account.getId(), account.getCustomer().getId());
+
         existingAccount.setBalance(account.getBalance());
         if (account.getCustomer() != null) {
             existingAccount.setCustomer(account.getCustomer());
         }
+
         if (account.getAccount_type() != null) {
             existingAccount.setAccount_type(account.getAccount_type());
         }
@@ -80,14 +82,14 @@ public class AccountServiceImp implements AccountService {
         double initial = account.getBalance();
 
         Transaction transaction = new Transaction();
+
         try {
             account.deposit(amount);
             this.accountRepository.save(account);
             performTransaction(amount, account, initial, SUCCESSFULL, transaction, DEPOSIT);
         } catch (Exception e) {
             performTransaction(amount, account, initial, SUCCESSFULL, transaction, DEPOSIT);
-            throw e;
-
+            throw new RuntimeException("Transaction failed with : "+e.getMessage());
         }
     }
 
@@ -114,6 +116,7 @@ public class AccountServiceImp implements AccountService {
         if (!account.hasSufficientBalance(amount)) {
             throw new IllegalArgumentException("Insufficient funds");
         }
+
         double initial = account.getBalance();
         account.withdraw(amount);
         Transaction transaction = new Transaction();
@@ -122,9 +125,10 @@ public class AccountServiceImp implements AccountService {
             account.withdraw(amount);
             accountRepository.save(account);
             performTransaction(amount, account, initial, SUCCESSFULL, transaction, WITHDRAWAL);
+
         } catch (Exception e) {
             performTransaction(amount, account, initial, FAILED, transaction, WITHDRAWAL);
-            throw e;
+            throw new RuntimeException("Transaction failed with : "+e.getMessage());
         }
     }
 

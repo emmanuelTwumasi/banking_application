@@ -11,4 +11,5 @@ public interface TransactionService {
     List<Transaction> getTransactionsByAccount(UUID account);
 
 
+    Transaction getTransaction(UUID transactionId);
 }
