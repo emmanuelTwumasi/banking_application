@@ -1,6 +1,6 @@
 package com.example.banking_application.service;
 
-import com.example.banking_application.dtos.AccountDto;
+import com.example.banking_application.dtos.AccountRegistrationInfo;
 import com.example.banking_application.model.Account;
 import com.example.banking_application.model.Transaction;
 
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface AccountService {
-    Account createAccount(AccountDto accountInfo);
+    Account createAccount(AccountRegistrationInfo accountInfo);
     Account getAccount(UUID customerId,UUID accountId) ;
 
     Account getAccount(UUID accountId);

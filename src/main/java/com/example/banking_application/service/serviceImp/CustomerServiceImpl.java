@@ -27,7 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer verifyCustomer(UUID customerId){
         return customerRepository.findById(customerId)
                 .orElseThrow(()->
-                        new CustomerNotFoundException("Customer with found with id: "+customerId));
+                        new CustomerNotFoundException("Customer with found with id: "+ customerId));
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.example.banking_application.model.enums.TRANSACTION_TYPE;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,7 +14,8 @@ import java.util.UUID;
 
 @Data
 @Entity
-public class Account {
+@EntityListeners(AuditingEntityListener.class)
+public class Account extends AuditableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
@@ -31,14 +33,12 @@ public class Account {
 
     private double balance;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
     public void deposit(double amount) {
         balance += amount;
     }
 
     public void withdraw(double amount) {
-        if (amount> balance) {
+        if (!hasSufficientBalance(amount)) {
             throw new IllegalArgumentException("Insufficient funds");
         }
         balance -= amount;

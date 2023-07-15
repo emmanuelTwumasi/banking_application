@@ -2,7 +2,6 @@ package com.example.banking_application.dtos.converter;
 
 
 import com.example.banking_application.dtos.CustomerResponse;
-import com.example.banking_application.dtos.RegisterRequestDto;
 import com.example.banking_application.model.Customer;
 import org.springframework.stereotype.Component;
 

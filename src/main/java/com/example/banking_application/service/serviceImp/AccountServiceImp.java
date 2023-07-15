@@ -1,6 +1,6 @@
 package com.example.banking_application.service.serviceImp;
 
-import com.example.banking_application.dtos.AccountDto;
+import com.example.banking_application.dtos.AccountRegistrationInfo;
 import com.example.banking_application.exceptions.AccountNotFoundException;
 import com.example.banking_application.model.Account;
 import com.example.banking_application.model.Customer;
@@ -30,12 +30,11 @@ public class AccountServiceImp implements AccountService {
     private final TransactionService transactionService;
 
     @Override
-    public Account createAccount(AccountDto accountInfo) {
-        Customer customer = this.customerService.registerUser(accountInfo.getCustomerDetails());
+    public Account createAccount(AccountRegistrationInfo accountInfo) {
+        Customer customer = this.customerService.verifyCustomer(accountInfo.getCustomerId());
         Account newAccount = new Account();
         newAccount.setAccount_type(accountInfo.getAccount_type());
         newAccount.setCustomer(customer);
-        newAccount.setBalance(0.00);
         return accountRepository.save(newAccount);
     }
 
@@ -79,17 +78,16 @@ public class AccountServiceImp implements AccountService {
     @Override
     public void deposit(UUID accountNumber, double amount) {
         Account account = this.getAccount(accountNumber);
-        double initial = account.getBalance();
-
+        double initialBalance = account.getBalance();
         Transaction transaction = new Transaction();
 
         try {
             account.deposit(amount);
             this.accountRepository.save(account);
-            performTransaction(amount, account, initial, SUCCESSFULL, transaction, DEPOSIT);
+            this.performTransaction(amount, account, initialBalance, SUCCESSFULL, transaction, DEPOSIT);
         } catch (Exception e) {
-            performTransaction(amount, account, initial, SUCCESSFULL, transaction, DEPOSIT);
-            throw new RuntimeException("Transaction failed with : "+e.getMessage());
+            this.performTransaction(amount, account, initialBalance, SUCCESSFULL, transaction, DEPOSIT);
+            throw new RuntimeException("Transaction failed : "+e.getMessage());
         }
     }
 
@@ -113,33 +111,27 @@ public class AccountServiceImp implements AccountService {
             throw new IllegalArgumentException("Account not found");
         }
 
-        if (!account.hasSufficientBalance(amount)) {
-            throw new IllegalArgumentException("Insufficient funds");
-        }
-
-        double initial = account.getBalance();
-        account.withdraw(amount);
+        double initialBalance = account.getBalance();
         Transaction transaction = new Transaction();
 
         try {
             account.withdraw(amount);
             accountRepository.save(account);
-            performTransaction(amount, account, initial, SUCCESSFULL, transaction, WITHDRAWAL);
-
+            this.performTransaction(amount, account, initialBalance, SUCCESSFULL, transaction, WITHDRAWAL);
         } catch (Exception e) {
-            performTransaction(amount, account, initial, FAILED, transaction, WITHDRAWAL);
-            throw new RuntimeException("Transaction failed with : "+e.getMessage());
+            this.performTransaction(amount, account, initialBalance, FAILED, transaction, WITHDRAWAL);
+            throw new RuntimeException("Transaction failed : "+e.getMessage());
         }
     }
 
     @Override
     public double getAccountBalance(UUID accountNumber) {
-        return getAccount(accountNumber).getBalance();
+        return this.getAccount(accountNumber).getBalance();
     }
 
     @Override
     public List<Transaction> getTransactionHistory(UUID accountNumber) {
-        return getAccount(accountNumber).getTransactionHistory();
+        return this.getAccount(accountNumber).getTransactionHistory();
     }
 
 }

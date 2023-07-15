@@ -23,8 +23,8 @@ public class CustomerController {
 
 
     @GetMapping
-    public ResponseEntity<CustomerResponse> getCustomer(@RequestBody String customerId){
-        Customer customer = this.customerService.verifyCustomer(UUID.fromString(customerId));
+    public ResponseEntity<CustomerResponse> getCustomer(@RequestBody UUID customerId){
+        Customer customer = this.customerService.verifyCustomer(customerId);
         return new ResponseEntity<>(this.customerMapper.convert(customer),HttpStatus.OK);
 
     }

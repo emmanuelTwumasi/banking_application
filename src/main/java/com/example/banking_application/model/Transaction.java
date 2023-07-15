@@ -5,13 +5,15 @@ import com.example.banking_application.model.enums.TRANSACTION_STATUS;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
 @Entity
-public class Transaction {
+@EntityListeners(AuditingEntityListener.class)
+public class Transaction extends AuditableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
@@ -21,15 +23,12 @@ public class Transaction {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @CreatedDate
-    private LocalDateTime timestamp;
-
     private String description;
 
+    @Enumerated(EnumType.STRING)
     private TRANSACTION_STATUS status;
+    @Enumerated(EnumType.STRING)
     private TRANSACTION_TYPE type;
-
-//    private String paymentMethod;
 
     private double initialBalance;
 
@@ -41,4 +40,6 @@ public class Transaction {
 
     private String recipient;
 
+
 }
+
