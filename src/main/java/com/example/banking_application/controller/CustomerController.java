@@ -6,6 +6,7 @@ import com.example.banking_application.dtos.RegisterRequestDto;
 import com.example.banking_application.dtos.converter.CustomerToCustomerResponse;
 import com.example.banking_application.model.Customer;
 import com.example.banking_application.service.CustomerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class CustomerController {
 
     }
     @PostMapping
-    public ResponseEntity<CustomerResponse> registerCustomer(@RequestBody RegisterRequestDto customerInfo){
+    public ResponseEntity<CustomerResponse> registerCustomer(@RequestBody @Valid RegisterRequestDto customerInfo){
         Customer customer = this.customerService.registerUser(customerInfo);
         return new ResponseEntity<>(this.customerMapper.convert(customer), HttpStatus.CREATED);
     }

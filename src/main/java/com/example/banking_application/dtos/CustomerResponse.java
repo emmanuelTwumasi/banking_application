@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
@@ -14,6 +15,6 @@ public class CustomerResponse{
     private String firstName;
     private String lastName;
     private int age;
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
 
 }
