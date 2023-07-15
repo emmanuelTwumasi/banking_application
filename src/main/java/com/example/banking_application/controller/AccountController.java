@@ -23,6 +23,7 @@ public class AccountController {
     private final TransactionService transactionService;
     private final AccountToAccountInfoConverter accountInfoMapper;
     private final TransactionToTransactionResponseConverter transactionConverter;
+
     @GetMapping
     public ResponseEntity<AccountDto> getAccount(@RequestBody AccountRequest accountRequest) {
         Account account = this.accountService.getAccount(accountRequest.customerId(), accountRequest.accountId());
@@ -30,28 +31,37 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<AccountDto> registerAccount(@RequestBody AccountRegistrationInfo accountInfo){
+    public ResponseEntity<AccountDto> registerAccount(@RequestBody AccountRegistrationInfo accountInfo) {
         Account account = this.accountService.createAccount(accountInfo);
-        return new ResponseEntity<>(this.accountInfoMapper.convert(account),HttpStatus.CREATED);
+        return new ResponseEntity<>(this.accountInfoMapper.convert(account), HttpStatus.CREATED);
     }
 
     @GetMapping("{accountId}")
-    public ResponseEntity<Double> getAccountBalance(@PathVariable String accountId){
+    public ResponseEntity<Double> getAccountBalance(@PathVariable String accountId) {
         return new ResponseEntity<>(this.accountService.getAccountBalance(UUID.fromString(accountId)), HttpStatus.OK);
     }
+
     @PostMapping("deposit")
-    public ResponseEntity<HttpStatus> deposit(@RequestBody TransactionRequestDto transaction){
-        this.accountService.deposit(transaction.accountId(),transaction.amount());
+    public ResponseEntity<HttpStatus> deposit(@RequestBody TransactionRequestDto transaction) {
+        this.accountService.deposit(transaction.accountId(), transaction.amount());
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @PostMapping("withdraw")
-    public ResponseEntity<HttpStatus> withDraw(@RequestBody TransactionRequestDto transaction){
-        this.accountService.withdraw(transaction.accountId(),transaction.amount());
+    public ResponseEntity<HttpStatus> withDraw(@RequestBody TransactionRequestDto transaction) {
+        this.accountService.withdraw(transaction.accountId(), transaction.amount());
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @GetMapping("{accountId}/transactions")
-    public ResponseEntity<List<TransactionDto>> getAccountTransactions(@PathVariable String accountId){
+    public ResponseEntity<List<TransactionDto>> getAccountTransactions(@PathVariable String accountId) {
         List<Transaction> transactionHistory = this.transactionService.getAccountTransactionHistory(UUID.fromString(accountId));
-        return new ResponseEntity<>(this.transactionConverter.convert(transactionHistory),HttpStatus.OK);
+        return new ResponseEntity<>(this.transactionConverter.convert(transactionHistory), HttpStatus.OK);
+    }
+
+    @GetMapping("customer")
+    public ResponseEntity<List<AccountDto>> getCustomerAccounts(@RequestParam UUID customerId) {
+        List<Account> customerAccounts = this.accountService.getCustomerAccounts(customerId);
+        return new ResponseEntity<>(this.accountInfoMapper.convert(customerAccounts), HttpStatus.OK);
     }
 }

@@ -1,21 +1,17 @@
 package com.example.banking_application.model;
 
 import com.example.banking_application.model.enums.ACCOUNT_TYPE;
-import com.example.banking_application.model.enums.TRANSACTION_TYPE;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Account extends AuditableEntity{
+public class Account extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
@@ -43,6 +39,7 @@ public class Account extends AuditableEntity{
         }
         balance -= amount;
     }
+
     public boolean hasSufficientBalance(double amount) {
         return balance >= amount;
     }

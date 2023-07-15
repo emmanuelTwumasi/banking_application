@@ -11,14 +11,15 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 public class CustomerServiceImpl implements CustomerService {
+    private static final Logger logger = LoggerFactory.getLogger(CustomerServiceImpl.class);
     private final CustomerRepository customerRepository;
     private final RequestDtoConvert registerDtoMapper;
-    private static final Logger logger = LoggerFactory.getLogger(CustomerServiceImpl.class);
 
     @Override
     public Customer registerUser(RegisterRequestDto customerInfo) {
@@ -32,18 +33,18 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer verifyCustomer(UUID customerId){
+    public Customer verifyCustomer(UUID customerId) {
         return customerRepository.findById(customerId)
-                .orElseThrow(()->
-                        new CustomerNotFoundException("Customer with found with id: "+ customerId));
+                .orElseThrow(() ->
+                        new CustomerNotFoundException("Customer with found with id: " + customerId));
     }
 
     @Override
     public UUID loginCustomer(LoginDto loginDto) {
         logger.debug("Customer logging in.");
-        Customer customer =  this.customerRepository.
+        Customer customer = this.customerRepository.
                 findCustomerByUsernameAndPassword(loginDto.email(), loginDto.password())
-                .orElseThrow(()->new CustomerNotFoundException("Customer does not exist."));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer does not exist."));
         logger.info("Customer logged in successfully.");
         return customer.getId();
     }

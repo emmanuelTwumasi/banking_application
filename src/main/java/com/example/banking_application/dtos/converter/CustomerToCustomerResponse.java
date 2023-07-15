@@ -14,18 +14,18 @@ public class CustomerToCustomerResponse implements Converter<Customer, CustomerR
     @Override
     public CustomerResponse convert(Customer customer) {
         return new CustomerResponse(customer.getId(),
-        customer.getFirstName(), customer.getLastName(), customer.getAge(), customer.getDateOfBirth());
+                customer.getFirstName(), customer.getLastName(), customer.getAge(), customer.getDateOfBirth());
     }
 
     @Override
     public List<CustomerResponse> convert(List<Customer> sourceList) {
-        if (sourceList==null){
+        if (sourceList == null) {
             return Collections.emptyList();
         }
 
         List<CustomerResponse> customerResponseList = new ArrayList<>();
 
-        for (Customer customer :sourceList) {
+        for (Customer customer : sourceList) {
 
             customerResponseList.add(convert(customer));
         }

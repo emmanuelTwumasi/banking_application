@@ -1,19 +1,17 @@
 package com.example.banking_application.model;
 
-import com.example.banking_application.model.enums.TRANSACTION_TYPE;
 import com.example.banking_application.model.enums.TRANSACTION_STATUS;
+import com.example.banking_application.model.enums.TRANSACTION_TYPE;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Transaction extends AuditableEntity{
+public class Transaction extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
@@ -34,7 +32,7 @@ public class Transaction extends AuditableEntity{
 
     private double amount;
 
-    private double currentBalance;
+    private double balance;
 
     private String sender;
 

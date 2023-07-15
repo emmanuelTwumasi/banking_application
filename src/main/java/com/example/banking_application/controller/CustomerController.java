@@ -23,20 +23,21 @@ public class CustomerController {
 
 
     @GetMapping
-    public ResponseEntity<CustomerResponse> getCustomer(@RequestBody UUID customerId){
+    public ResponseEntity<CustomerResponse> getCustomer(@RequestBody UUID customerId) {
         Customer customer = this.customerService.verifyCustomer(customerId);
-        return new ResponseEntity<>(this.customerMapper.convert(customer),HttpStatus.OK);
+        return new ResponseEntity<>(this.customerMapper.convert(customer), HttpStatus.OK);
 
     }
+
     @PostMapping
-    public ResponseEntity<CustomerResponse> registerCustomer(@RequestBody @Valid RegisterRequestDto customerInfo){
+    public ResponseEntity<CustomerResponse> registerCustomer(@RequestBody @Valid RegisterRequestDto customerInfo) {
         Customer customer = this.customerService.registerUser(customerInfo);
         return new ResponseEntity<>(this.customerMapper.convert(customer), HttpStatus.CREATED);
     }
 
     @GetMapping("/login")
-    public ResponseEntity<UUID> login(@RequestBody LoginDto loginDto){
-    return new ResponseEntity<>(this.customerService.loginCustomer(loginDto),HttpStatus.OK);
+    public ResponseEntity<UUID> login(@RequestBody LoginDto loginDto) {
+        return new ResponseEntity<>(this.customerService.loginCustomer(loginDto), HttpStatus.OK);
     }
 
 }

@@ -19,7 +19,7 @@ public class TransactionToTransactionResponseConverter implements Converter<Tran
         return new TransactionDto(source.getId(), source.getAccount().getAccount_type(),
                 source.getCreatedAt(), source.getDescription(), source.getStatus(),
                 source.getType(), source.getInitialBalance(), source.getAmount(),
-                source.getCurrentBalance(), source.getSender(), source.getRecipient(),
+                source.getBalance(), source.getSender(), source.getRecipient(),
                 source.getCreatedAt(), source.getUpdatedAt());
     }
 

@@ -5,8 +5,6 @@ import com.example.banking_application.exceptions.AccountNotFoundException;
 import com.example.banking_application.model.Account;
 import com.example.banking_application.model.Customer;
 import com.example.banking_application.model.Transaction;
-import com.example.banking_application.model.enums.TRANSACTION_STATUS;
-import com.example.banking_application.model.enums.TRANSACTION_TYPE;
 import com.example.banking_application.repository.AccountRepository;
 import com.example.banking_application.service.AccountService;
 import com.example.banking_application.service.CustomerService;
@@ -27,12 +25,10 @@ import static com.example.banking_application.model.enums.TRANSACTION_TYPE.WITHD
 @RequiredArgsConstructor
 @Service
 public class AccountServiceImp implements AccountService {
+    private static final Logger logger = LoggerFactory.getLogger(AccountServiceImp.class);
     private final AccountRepository accountRepository;
     private final CustomerService customerService;
     private final TransactionService transactionService;
-
-    private static final Logger logger = LoggerFactory.getLogger(AccountServiceImp.class);
-
 
     @Override
     public Account createAccount(AccountRegistrationInfo accountInfo) {
@@ -44,14 +40,18 @@ public class AccountServiceImp implements AccountService {
         Account savedAccount = accountRepository.save(newAccount);
         logger.info("Account created successfully. Account ID: {}", savedAccount.getId());
         return savedAccount;
+    }
 
+    @Override
+    public List<Account> getCustomerAccounts(UUID customerId) {
+        this.customerService.verifyCustomer(customerId);
+        return this.accountRepository.findAllByCustomerId(customerId);
     }
 
     @Override
     public Account getAccount(UUID customerId, UUID accountId) {
         logger.debug("Fetching account for Customer ID: {} and Account ID: {}", customerId, accountId);
         customerService.verifyCustomer(customerId);
-
 
         Account account = accountRepository.findById(accountId).orElseThrow(() ->
                 new AccountNotFoundException("Account not found with number :" + accountId));
@@ -71,26 +71,6 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public Account updateAccount(Account account) {
-        if (account == null || account.getId() == null || account.getCustomer() == null) {
-            return null;
-        }
-
-        Account existingAccount = this.getAccount(account.getId(), account.getCustomer().getId());
-
-        existingAccount.setBalance(account.getBalance());
-        if (account.getCustomer() != null) {
-            existingAccount.setCustomer(account.getCustomer());
-        }
-
-        if (account.getAccount_type() != null) {
-            existingAccount.setAccount_type(account.getAccount_type());
-        }
-
-        return this.accountRepository.save(existingAccount);
-    }
-
-    @Override
     public void deposit(UUID accountNumber, double amount) {
         logger.debug("Deposit transaction requested for Account: {}, Amount: {}", accountNumber, amount);
         Account account = this.getAccount(accountNumber);
@@ -105,10 +85,9 @@ public class AccountServiceImp implements AccountService {
         } catch (Exception e) {
             this.transactionService.performTransaction(amount, account, initialBalance, SUCCESSFULL, transaction, DEPOSIT);
             logger.error("Deposit transaction failed", e);
-            throw new RuntimeException("Transaction failed : "+e.getMessage());
+            throw new RuntimeException("Transaction failed : " + e.getMessage());
         }
     }
-
 
 
     @Override
@@ -135,7 +114,7 @@ public class AccountServiceImp implements AccountService {
         } catch (Exception e) {
             this.transactionService.performTransaction(amount, account, initialBalance, FAILED, transaction, WITHDRAWAL);
             logger.error("Withdrawal transaction failed", e);
-            throw new RuntimeException("Transaction failed : "+e.getMessage());
+            throw new RuntimeException("Transaction failed : " + e.getMessage());
         }
     }
 

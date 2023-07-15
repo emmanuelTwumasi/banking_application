@@ -10,7 +10,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerResponse{
+public class CustomerResponse {
     private UUID customerId;
     private String firstName;
     private String lastName;

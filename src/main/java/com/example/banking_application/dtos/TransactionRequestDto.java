@@ -4,6 +4,6 @@ import java.util.UUID;
 
 
 public record TransactionRequestDto(
-    UUID accountId,
-    double amount){
+        UUID accountId,
+        double amount) {
 }
