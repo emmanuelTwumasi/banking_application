@@ -6,6 +6,7 @@ import com.example.banking_application.dtos.converter.TransactionToTransactionRe
 import com.example.banking_application.model.Account;
 import com.example.banking_application.model.Transaction;
 import com.example.banking_application.service.AccountService;
+import com.example.banking_application.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/account")
 public class AccountController {
     private final AccountService accountService;
+    private final TransactionService transactionService;
     private final AccountToAccountInfoConverter accountInfoMapper;
     private final TransactionToTransactionResponseConverter transactionConverter;
     @GetMapping
@@ -49,7 +51,7 @@ public class AccountController {
     }
     @GetMapping("{accountId}/transactions")
     public ResponseEntity<List<TransactionDto>> getAccountTransactions(@PathVariable String accountId){
-        List<Transaction> transactionHistory=this.accountService.getTransactionHistory(UUID.fromString(accountId));
+        List<Transaction> transactionHistory = this.transactionService.getAccountTransactionHistory(UUID.fromString(accountId));
         return new ResponseEntity<>(this.transactionConverter.convert(transactionHistory),HttpStatus.OK);
     }
 }

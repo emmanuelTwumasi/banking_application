@@ -8,6 +8,8 @@ import com.example.banking_application.model.Customer;
 import com.example.banking_application.repository.CustomerRepository;
 import com.example.banking_application.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import java.util.UUID;
 
@@ -16,11 +18,17 @@ import java.util.UUID;
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final RequestDtoConvert registerDtoMapper;
+    private static final Logger logger = LoggerFactory.getLogger(CustomerServiceImpl.class);
 
     @Override
     public Customer registerUser(RegisterRequestDto customerInfo) {
-        Customer newCustomer = this.registerDtoMapper.convert(customerInfo);
-        return customerRepository.save(newCustomer);
+        logger.debug("Registering a new customer.");
+        Customer customer = this.registerDtoMapper.convert(customerInfo);
+
+        Customer newCustomer = customerRepository.save(customer);
+
+        logger.info("Customer registered successfully. Customer ID: {}", newCustomer.getId());
+        return newCustomer;
     }
 
     @Override
@@ -32,9 +40,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public UUID loginCustomer(LoginDto loginDto) {
+        logger.debug("Customer logging in.");
         Customer customer =  this.customerRepository.
                 findCustomerByUsernameAndPassword(loginDto.email(), loginDto.password())
                 .orElseThrow(()->new CustomerNotFoundException("Customer does not exist."));
+        logger.info("Customer logged in successfully.");
         return customer.getId();
     }
 

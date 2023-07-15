@@ -17,5 +17,5 @@ public interface AccountService {
     void deposit(UUID accountNumber, double amount);
     void withdraw(UUID accountNumber, double amount);
     double getAccountBalance(UUID accountNumber);
-    List<Transaction> getTransactionHistory(UUID accountNumber);
+//    List<Transaction> getTransactionHistory(UUID accountNumber);
 }

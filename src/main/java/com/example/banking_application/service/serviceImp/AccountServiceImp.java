@@ -12,6 +12,8 @@ import com.example.banking_application.service.AccountService;
 import com.example.banking_application.service.CustomerService;
 import com.example.banking_application.service.TransactionService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,23 +31,36 @@ public class AccountServiceImp implements AccountService {
     private final CustomerService customerService;
     private final TransactionService transactionService;
 
+    private static final Logger logger = LoggerFactory.getLogger(AccountServiceImp.class);
+
+
     @Override
     public Account createAccount(AccountRegistrationInfo accountInfo) {
+        logger.debug("Creating a new account");
         Customer customer = this.customerService.verifyCustomer(accountInfo.getCustomerId());
         Account newAccount = new Account();
         newAccount.setAccount_type(accountInfo.getAccount_type());
         newAccount.setCustomer(customer);
-        return accountRepository.save(newAccount);
+        Account savedAccount = accountRepository.save(newAccount);
+        logger.info("Account created successfully. Account ID: {}", savedAccount.getId());
+        return savedAccount;
+
     }
 
     @Override
     public Account getAccount(UUID customerId, UUID accountId) {
+        logger.debug("Fetching account for Customer ID: {} and Account ID: {}", customerId, accountId);
         customerService.verifyCustomer(customerId);
+
+
         Account account = accountRepository.findById(accountId).orElseThrow(() ->
                 new AccountNotFoundException("Account not found with number :" + accountId));
         if (customerId != account.getCustomer().getId()) {
             throw new RuntimeException("Can't access this account");
         }
+
+        logger.debug("Account retrieved successfully");
+
         return account;
     }
 
@@ -77,6 +92,7 @@ public class AccountServiceImp implements AccountService {
 
     @Override
     public void deposit(UUID accountNumber, double amount) {
+        logger.debug("Deposit transaction requested for Account: {}, Amount: {}", accountNumber, amount);
         Account account = this.getAccount(accountNumber);
         double initialBalance = account.getBalance();
         Transaction transaction = new Transaction();
@@ -84,30 +100,26 @@ public class AccountServiceImp implements AccountService {
         try {
             account.deposit(amount);
             this.accountRepository.save(account);
-            this.performTransaction(amount, account, initialBalance, SUCCESSFULL, transaction, DEPOSIT);
+            this.transactionService.performTransaction(amount, account, initialBalance, SUCCESSFULL, transaction, DEPOSIT);
+            logger.debug("Deposit transaction completed successfully. Account: {}, Amount: {}", accountNumber, amount);
         } catch (Exception e) {
-            this.performTransaction(amount, account, initialBalance, SUCCESSFULL, transaction, DEPOSIT);
+            this.transactionService.performTransaction(amount, account, initialBalance, SUCCESSFULL, transaction, DEPOSIT);
+            logger.error("Deposit transaction failed", e);
             throw new RuntimeException("Transaction failed : "+e.getMessage());
         }
     }
 
-    private void performTransaction(double amount, Account account,
-                                    double initialAmount, TRANSACTION_STATUS transactionStatus,
-                                    Transaction transaction, TRANSACTION_TYPE transactionType) {
-        transaction.setType(transactionType);
-        transaction.setInitialBalance(initialAmount);
-        transaction.setAmount(amount);
-        transaction.setCurrentBalance(account.getBalance());
-        transaction.setStatus(transactionStatus);
-        transaction.setAccount(account);
-        this.transactionService.addTransaction(transaction);
-    }
+
 
     @Override
     public void withdraw(UUID accountNumber, double amount) {
+
+        logger.debug("Withdrawal transaction requested for Account: {}, Amount: {}", accountNumber, amount);
+
         Account account = getAccount(accountNumber);
 
         if (account == null) {
+            logger.error("Account not found for withdrawal transaction");
             throw new IllegalArgumentException("Account not found");
         }
 
@@ -117,9 +129,12 @@ public class AccountServiceImp implements AccountService {
         try {
             account.withdraw(amount);
             accountRepository.save(account);
-            this.performTransaction(amount, account, initialBalance, SUCCESSFULL, transaction, WITHDRAWAL);
+            this.transactionService.performTransaction(amount, account, initialBalance, SUCCESSFULL, transaction, WITHDRAWAL);
+            logger.debug("Withdrawal transaction completed successfully");
+
         } catch (Exception e) {
-            this.performTransaction(amount, account, initialBalance, FAILED, transaction, WITHDRAWAL);
+            this.transactionService.performTransaction(amount, account, initialBalance, FAILED, transaction, WITHDRAWAL);
+            logger.error("Withdrawal transaction failed", e);
             throw new RuntimeException("Transaction failed : "+e.getMessage());
         }
     }
@@ -127,11 +142,6 @@ public class AccountServiceImp implements AccountService {
     @Override
     public double getAccountBalance(UUID accountNumber) {
         return this.getAccount(accountNumber).getBalance();
-    }
-
-    @Override
-    public List<Transaction> getTransactionHistory(UUID accountNumber) {
-        return this.getAccount(accountNumber).getTransactionHistory();
     }
 
 }
