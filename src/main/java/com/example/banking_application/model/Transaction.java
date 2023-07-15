@@ -1,8 +1,15 @@
 package com.example.banking_application.model;
 
+import com.example.banking_application.model.enums.TRANSACTION_TYPE;
+import com.example.banking_application.model.enums.TRANSACTION_STATUS;
 import jakarta.persistence.*;
+import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Data
 @Entity
 public class Transaction {
     @Id
@@ -14,7 +21,24 @@ public class Transaction {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    private float initialBalance;
-    private float amount;
+    @CreatedDate
+    private LocalDateTime timestamp;
+
+    private String description;
+
+    private TRANSACTION_STATUS status;
+    private TRANSACTION_TYPE type;
+
+//    private String paymentMethod;
+
+    private double initialBalance;
+
+    private double amount;
+
+    private double currentBalance;
+
+    private String sender;
+
+    private String recipient;
 
 }

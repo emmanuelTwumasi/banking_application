@@ -1,6 +1,6 @@
 package com.example.banking_application.dtos;
 
-import com.example.banking_application.model.ACCOUNT_TYPE;
+import com.example.banking_application.model.enums.ACCOUNT_TYPE;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
