@@ -1,5 +1,6 @@
 package com.example.banking_application.service.serviceImp;
 
+import com.example.banking_application.exceptions.ResourceNotFoundException;
 import com.example.banking_application.model.Account;
 import com.example.banking_application.model.Transaction;
 import com.example.banking_application.model.enums.TRANSACTION_STATUS;
@@ -40,7 +41,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction getTransaction(UUID transactionId) {
         return transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + transactionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with id: " + transactionId));
     }
 
 

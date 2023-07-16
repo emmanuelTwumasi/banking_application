@@ -25,6 +25,7 @@ public class Transaction extends AuditableEntity {
 
     @Enumerated(EnumType.STRING)
     private TRANSACTION_STATUS status;
+
     @Enumerated(EnumType.STRING)
     private TRANSACTION_TYPE type;
 

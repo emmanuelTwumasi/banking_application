@@ -3,7 +3,7 @@ package com.example.banking_application.service.serviceImp;
 import com.example.banking_application.dtos.LoginDto;
 import com.example.banking_application.dtos.RegisterRequestDto;
 import com.example.banking_application.dtos.converter.RequestDtoConvert;
-import com.example.banking_application.exceptions.CustomerNotFoundException;
+import com.example.banking_application.exceptions.ResourceNotFoundException;
 import com.example.banking_application.model.Customer;
 import com.example.banking_application.repository.CustomerRepository;
 import com.example.banking_application.service.CustomerService;
@@ -36,7 +36,7 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer verifyCustomer(UUID customerId) {
         return customerRepository.findById(customerId)
                 .orElseThrow(() ->
-                        new CustomerNotFoundException("Customer with found with id: " + customerId));
+                        new ResourceNotFoundException("Customer with found with id: " + customerId));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
         logger.debug("Customer logging in.");
         Customer customer = this.customerRepository.
                 findCustomerByUsernameAndPassword(loginDto.email(), loginDto.password())
-                .orElseThrow(() -> new CustomerNotFoundException("Customer does not exist."));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer does not exist."));
         logger.info("Customer logged in successfully.");
         return customer.getId();
     }

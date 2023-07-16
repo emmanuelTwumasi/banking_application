@@ -1,7 +1,7 @@
 package com.example.banking_application.service;
 
 import com.example.banking_application.dtos.AccountRegistrationInfo;
-import com.example.banking_application.exceptions.AccountNotFoundException;
+import com.example.banking_application.exceptions.ResourceNotFoundException;
 import com.example.banking_application.model.Account;
 import com.example.banking_application.model.Customer;
 import com.example.banking_application.repository.AccountRepository;
@@ -25,7 +25,6 @@ class AccountServiceTest {
 
     @Mock
     private CustomerService customerService;
-
     @Mock
     private TransactionService transactionService;
     private AccountService accountService;
@@ -93,9 +92,9 @@ class AccountServiceTest {
         UUID accountId = UUID.randomUUID();
 
         when(customerService.verifyCustomer(customerId))
-                .thenThrow(new AccountNotFoundException("Account not found"));
+                .thenThrow(new ResourceNotFoundException("Account not found"));
 
-        assertThrows(AccountNotFoundException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             accountService.getAccount(customerId, accountId);
         });
     }
@@ -108,7 +107,7 @@ class AccountServiceTest {
         when(customerService.verifyCustomer(customerId)).thenReturn(new Customer());
         when(accountRepository.findById(accountId)).thenReturn(Optional.empty());
 
-        assertThrows(AccountNotFoundException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             accountService.getAccount(customerId, accountId);
         });
     }
@@ -156,7 +155,7 @@ class AccountServiceTest {
 
         when(accountRepository.findById(accountNumber)).thenReturn(Optional.empty());
 
-        assertThrows(AccountNotFoundException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             accountService.deposit(accountNumber, amount);
         });
     }
@@ -201,7 +200,7 @@ class AccountServiceTest {
 
         when(accountRepository.findById(accountNumber)).thenReturn(Optional.empty());
 
-        assertThrows(AccountNotFoundException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             accountService.withdraw(accountNumber, amount);
         });
     }
@@ -227,7 +226,7 @@ class AccountServiceTest {
 
         when(accountRepository.findById(accountNumber)).thenReturn(Optional.empty());
 
-        assertThrows(AccountNotFoundException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             accountService.getAccountBalance(accountNumber);
         });
     }

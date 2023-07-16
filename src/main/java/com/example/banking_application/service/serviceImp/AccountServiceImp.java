@@ -1,7 +1,7 @@
 package com.example.banking_application.service.serviceImp;
 
 import com.example.banking_application.dtos.AccountRegistrationInfo;
-import com.example.banking_application.exceptions.AccountNotFoundException;
+import com.example.banking_application.exceptions.ResourceNotFoundException;
 import com.example.banking_application.model.Account;
 import com.example.banking_application.model.Customer;
 import com.example.banking_application.model.Transaction;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.example.banking_application.model.enums.TRANSACTION_STATUS.FAILED;
-import static com.example.banking_application.model.enums.TRANSACTION_STATUS.SUCCESSFULL;
+import static com.example.banking_application.model.enums.TRANSACTION_STATUS.SUCCESSFUL;
 import static com.example.banking_application.model.enums.TRANSACTION_TYPE.DEPOSIT;
 import static com.example.banking_application.model.enums.TRANSACTION_TYPE.WITHDRAWAL;
 
@@ -54,7 +54,7 @@ public class AccountServiceImp implements AccountService {
         customerService.verifyCustomer(customerId);
 
         Account account = accountRepository.findById(accountId).orElseThrow(() ->
-                new AccountNotFoundException("Account not found with number :" + accountId));
+                new ResourceNotFoundException("Account not found with number :" + accountId));
         if (customerId != account.getCustomer().getId()) {
             throw new RuntimeException("Can't access this account");
         }
@@ -67,7 +67,7 @@ public class AccountServiceImp implements AccountService {
     @Override
     public Account getAccount(UUID accountId) {
         return accountRepository.findById(accountId).orElseThrow(() ->
-                new AccountNotFoundException("Account not found with number :" + accountId));
+                new ResourceNotFoundException("Account not found with number :" + accountId));
     }
 
     @Override
@@ -80,11 +80,11 @@ public class AccountServiceImp implements AccountService {
         try {
             account.deposit(amount);
             this.accountRepository.save(account);
-            this.transactionService.performTransaction(amount, account, initialBalance, SUCCESSFULL, transaction, DEPOSIT);
+            this.transactionService.performTransaction(amount, account, initialBalance, SUCCESSFUL, transaction, DEPOSIT);
             logger.debug("Deposit transaction completed successfully. Account: {}, Amount: {}", accountNumber, amount);
         } catch (Exception e) {
-            this.transactionService.performTransaction(amount, account, initialBalance, SUCCESSFULL, transaction, DEPOSIT);
-            logger.error("Deposit transaction failed", e);
+            this.transactionService.performTransaction(amount, account, initialBalance, SUCCESSFUL, transaction, DEPOSIT);
+            logger.error("Deposit transaction failed :", e);
             throw new RuntimeException("Transaction failed : " + e.getMessage());
         }
     }
@@ -99,7 +99,7 @@ public class AccountServiceImp implements AccountService {
 
         if (account == null) {
             logger.error("Account not found for withdrawal transaction");
-            throw new IllegalArgumentException("Account not found");
+            throw new ResourceNotFoundException("Account not found");
         }
 
         double initialBalance = account.getBalance();
@@ -108,9 +108,8 @@ public class AccountServiceImp implements AccountService {
         try {
             account.withdraw(amount);
             accountRepository.save(account);
-            this.transactionService.performTransaction(amount, account, initialBalance, SUCCESSFULL, transaction, WITHDRAWAL);
+            this.transactionService.performTransaction(amount, account, initialBalance, SUCCESSFUL, transaction, WITHDRAWAL);
             logger.debug("Withdrawal transaction completed successfully");
-
         } catch (Exception e) {
             this.transactionService.performTransaction(amount, account, initialBalance, FAILED, transaction, WITHDRAWAL);
             logger.error("Withdrawal transaction failed", e);
