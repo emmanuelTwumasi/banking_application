@@ -1,5 +1,6 @@
 package com.example.banking_application.model;
 
+import com.example.banking_application.model.enums.ACCOUNT_STATUS;
 import com.example.banking_application.model.enums.ACCOUNT_TYPE;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -19,6 +20,9 @@ public class Account extends AuditableEntity {
 
     @Enumerated(EnumType.STRING)
     private ACCOUNT_TYPE account_type;
+
+    @Enumerated(EnumType.STRING)
+    private ACCOUNT_STATUS status;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
